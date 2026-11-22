@@ -190,7 +190,8 @@ class ModelVodItem(ModelBase):
     def process_discord_data(cls, data):
         try:
             #logger.error(d(data))
-            entity = cls.get_by_filename(data['msg']['data']['f'])
+            #entity = cls.get_by_filename(data['msg']['data']['f'])
+            entity = cls.get_by_fileid(data["msg"]["data"]["id"])
             if entity is not None:
                 return
             entity =  ModelVodItem()
@@ -228,6 +229,14 @@ class ModelVodItem(ModelBase):
             cls.P.logger.error(f'Exception:{str(e)}')
             cls.P.logger.error(traceback.format_exc())
 
+
+    @classmethod
+    def get_by_fileid(cls, fileid):
+        try:
+            with F.app.app_context():
+                return F.db.session.query(cls).filter_by(fileid=fileid).first()
+        except Exception:
+            cls.P.logger.exception(f"파일 ID로 조회 중 오류: {fileid}")
 
     
     @classmethod
